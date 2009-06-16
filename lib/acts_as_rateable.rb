@@ -22,23 +22,22 @@ module Rateable #:nodoc:
       find(:all, options_for_tally(options.merge({:order =>"count DESC" })))
     end
 
-    # 
     # Options:
-    #  :start_at    - Restrict the votes to those created after a certain time
-    #  :end_at      - Restrict the votes to those created before a certain time
+    #  :start_at    - Restrict the ratings to those created after a certain time
+    #  :end_at      - Restrict the ratings to those created before a certain time
     #  :conditions  - A piece of SQL conditions to add to the query
-    #  :limit       - The maximum number of voteables to return
-    #  :order       - A piece of SQL to order by. Eg 'votes.count desc' or 'voteable.created_at desc'
-    #  :at_least    - Item must have at least X votes
-    #  :at_most     - Item may not have more than X votes
+    #  :limit       - The maximum number of rateables to return
+    #  :order       - A piece of SQL to order by. Eg 'ratings.count desc' or 'rateable.created_at desc'
+    #  :at_least    - Item must have at least X ratings
+    #  :at_most     - Item may not have more than X ratings
     def options_for_tally (options = {})
         options.assert_valid_keys :start_at, :end_at, :conditions, :at_least, :at_most, :order, :limit
 
         scope = scope(:find)
-        start_at = sanitize_sql(["#{Vote.table_name}.created_at >= ?", options.delete(:start_at)]) if options[:start_at]
-        end_at = sanitize_sql(["#{Vote.table_name}.created_at <= ?", options.delete(:end_at)]) if options[:end_at]
+        start_at = sanitize_sql(["#{Rating.table_name}.created_at >= ?", options.delete(:start_at)]) if options[:start_at]
+        end_at = sanitize_sql(["#{Rating.table_name}.created_at <= ?", options.delete(:end_at)]) if options[:end_at]
 
-        type_and_context = "#{Vote.table_name}.voteable_type = #{quote_value(base_class.name)}"
+        type_and_context = "#{Rating.table_name}.rateable_type = #{quote_value(base_class.name)}"
 
         conditions = [
           type_and_context,
@@ -50,15 +49,15 @@ module Rateable #:nodoc:
         conditions = conditions.compact.join(' AND ')
         conditions = merge_conditions(conditions, scope[:conditions]) if scope
 
-        joins = ["LEFT OUTER JOIN #{Vote.table_name} ON #{table_name}.#{primary_key} = #{Vote.table_name}.voteable_id"]
+        joins = ["LEFT OUTER JOIN #{Rating.table_name} ON #{table_name}.#{primary_key} = #{Rating.table_name}.rateable_id"]
         joins << scope[:joins] if scope && scope[:joins]
-        at_least  = sanitize_sql(["COUNT(#{Vote.table_name}.id) >= ?", options.delete(:at_least)]) if options[:at_least]
-        at_most   = sanitize_sql(["COUNT(#{Vote.table_name}.id) <= ?", options.delete(:at_most)]) if options[:at_most]
+        at_least  = sanitize_sql(["COUNT(#{Rating.table_name}.id) >= ?", options.delete(:at_least)]) if options[:at_least]
+        at_most   = sanitize_sql(["COUNT(#{Rating.table_name}.id) <= ?", options.delete(:at_most)]) if options[:at_most]
         having    = [at_least, at_most].compact.join(' AND ')
-        group_by  = "#{Vote.table_name}.voteable_id HAVING COUNT(#{Vote.table_name}.id) > 0"
+        group_by  = "#{Rating.table_name}.rateable_id HAVING COUNT(#{Rating.table_name}.id) > 0"
         group_by << " AND #{having}" unless having.blank?
 
-        { :select     => "#{table_name}.*, COUNT(#{Vote.table_name}.id) AS count", 
+        { :select     => "#{table_name}.*, COUNT(#{Rating.table_name}.id) AS count", 
           :joins      => joins.join(" "),
           :conditions => conditions,
           :group      => group_by
@@ -68,51 +67,48 @@ module Rateable #:nodoc:
   
   # This module contains instance methods
   module InstanceMethods
+    
+    # Returns the count of all the ratings submitted
     def ratings_for
-      Rate.count(:all, :conditions => [
+      Rating.count(:all, :conditions => [
         "rateable_id = ? AND rateable_type = ? AND rate = ?",
         id, self.class.name, true
       ])
     end
     
-    
+    # Returns the average rating as a float
     def rate_avg
-      all_votes = Vote.find(:all, :conditions => [
-        "voteable_id = ? AND voteable_type = ?",
+      all_ratings = Rating.find(:all, :conditions => [
+        "rateable_id = ? AND rateable_type = ?",
         id, self.class.name])
       total = 0.0
-      all_votes.each do |vote|
-        total += vote.vote
+      all_ratings.each do |rating|
+        total += rating.rating
       end
-      votes = all_votes.size.to_f
-      total/votes
+      ratings = all_ratings.size.to_f
+      total/ratings
     end   
-            
-    def votes_against
-      Vote.count(:all, :conditions => [
-        "voteable_id = ? AND voteable_type = ? AND vote = ?",
-        id, self.class.name, false
-      ])
+
+    # Returns the number of ratings submitted
+    # for this rateable object
+    def ratings_count
+      self.ratings.size
     end
     
-    # Same as voteable.votes.size
-    def votes_count
-      self.votes.size
+    # Returns an array of raters who rated this ob
+    def raters_who_rated
+      raters = []
+      self.ratings.each { |r|
+        raters << r.rater
+        }
+      raters
     end
     
-    def voters_who_voted
-      voters = []
-      self.votes.each { |v|
-        voters << v.voter
-      }
-      voters
-    end
-    
-    def voted_by?(voter)
+    def rated_by?(rater)
       rtn = false
-      if voter
-        self.votes.each { |v|
-          rtn = true if (voter.id == v.voter_id && voter.class.name == v.voter_type)
+      if rater
+        self.ratings.each { |r|
+          rtn = true if (rater.id == r.rater_id && rater.class.name == r.rater_type)
         }
       end
       rtn

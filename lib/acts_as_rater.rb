@@ -20,72 +20,39 @@ module Rater #:nodoc:
   # This module contains instance methods
   module InstanceMethods
     
-    # Usage user.vote_count(true)  # All +1 votes
-    #       user.vote_count(false) # All -1 votes
-    #       user.vote_count()      # All votes
-    
-    def vote_count(for_or_against = "all")
-      where = (for_or_against == "all") ? 
-        ["voter_id = ? AND voter_type = ?", id, self.class.name ] : 
-        ["voter_id = ? AND voter_type = ? AND vote = ?", id, self.class.name, for_or_against ]
-                    
-      Vote.count(:all, :conditions => where)
+    # Return how many ratings the rater has submitted
+    def rate_count
+      where = "rater_id = ? AND rater_type = ?", id, self.class.name
+      Rating.count(:all, :conditions => where)
 
-    end
-            
-    def voted_for?(voteable)
-       0 < Vote.count(:all, :conditions => [
-               "voter_id = ? AND voter_type = ? AND vote = ? AND voteable_id = ? AND voteable_type = ?",
-               self.id, self.class.name, true, voteable.id, voteable.class.name
-               ])
-     end
-
-     def voted_against?(voteable)
-       0 < Vote.count(:all, :conditions => [
-               "voter_id = ? AND voter_type = ? AND vote = ? AND voteable_id = ? AND voteable_type = ?",
-               self.id, self.class.name, false, voteable.id, voteable.class.name
-               ])
-     end
-
-     def voted_on?(voteable)
-       0 < Vote.count(:all, :conditions => [
-               "voter_id = ? AND voter_type = ? AND voteable_id = ? AND voteable_type = ?",
-               self.id, self.class.name, voteable.id, voteable.class.name
-               ])
-     end
-            
-    def vote_for(voteable)
-      self.vote(voteable, true)
     end
     
-    # Added this to rate the voteable model with integers
-            # instead of boolean
-            def rate(voteable, rate)
-              already_voted = Vote.find(:first, :conditions => [
-                       "voter_id = ? AND voter_type = ? AND voteable_id = ? AND voteable_type = ?",
-                       self.id, self.class.name, voteable.id, voteable.class.name
-                       ])
-              if already_voted
-                already_voted.update_attribute(:vote, rate)
-              else
-                vote = Vote.new(:vote => rate, :voteable => voteable, :voter => self)
-                vote.save
-              end
-            end
-
-            # return what this student rated the object at
-            def student_rated(voteable)
-              vote = Vote.find_by_voteable_id_and_voter_id_and_voteable_type(voteable, self, voteable.class.name)
-              vote.vote if vote
-            end
-            
-    def vote_against(voteable)
-      self.vote(voteable, false)
+    # Check if the rater rated this object returns boolean
+    def rated?(rateable)
+       0 < Rating.count(:all, :conditions => [
+               "rater_id = ? AND rater_type = ? AND rateable_id = ? AND rateable_type = ?",
+               self.id, self.class.name, rateable.id, rateable.class.name
+               ])
+    end
+     
+    # Rate the rateable object with integers
+    def rate(rateable, rate)
+      already_rated = Rating.find(:first, :conditions => [
+               "rater_id = ? AND rater_type = ? AND rateable_id = ? AND rateable_type = ?",
+               self.id, self.class.name, rateable.id, rateable.class.name
+               ])
+      if already_rated
+        already_rated.update_attribute(:rating, rate)
+      else
+        rate = Rating.new(:rating => rate, :rateable => rateable, :rater => self)
+        rate.save
+      end
     end
 
-    def vote(voteable, vote)
-      vote = Vote.new(:vote => vote, :voteable => voteable, :voter => self)
-      vote.save
+    # return what integer value this rater rated the object
+    def rater_rated(rateable)
+      rate = Rating.find_by_rateable_id_and_rater_id_and_rateable_type(rateable, self, rateable.class.name)
+      rate.rating if rate
     end
 
   end
