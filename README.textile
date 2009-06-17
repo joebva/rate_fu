@@ -8,12 +8,30 @@ Install
 
 Run the following command:
 <pre>
-./script/plugin install git://github.com/joebva/rate_fu.git
+	./script/plugin install git://github.com/joebva/rate_fu.git
 </pre>
 Create a new rails migration using the generator:
 <pre>
-./script/generate rate_fu RateableModel
+	./script/generate rate_fu RateableModel
 </pre>
+This will create a migration file ('ratings' table) and a directory /app/views/ratings with a partial and a .rjs file. It will also move stars.gif to public/images.
+
+Add this to all the models you want to be rate: (articles, photos, images)
+<pre>
+	acts_as_rateable
+</pre>
+Add this to all the models you want to rate things: (users, accounts, employees)
+<pre>
+	acts_as_rater
+</pre>
+Add this to the show view of each model you set as 'acts_as_rateable'
+<pre>
+	<% rating_stars :generate_css => true %>
+	<div id="star_ratings_block">
+	  <%= render :partial => "ratings/rating", :locals => { :rateable => @rateable } %>
+	</div>
+</pre>
+The rating_stars method inserts inline css. This can be omitted if you move the styles into your css file.
 
 Example
 =======
