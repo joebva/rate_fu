@@ -38,7 +38,8 @@ Add this to your controller show action for each rateable model:
 	def show
     	@article = Article.find(params[:id])
 		@rateable = @article
-		@current_user = User.find(params[:user_id])
+		# TODO for testing find the first user
+		@current_user ? @current_user = User.find(params[:user_id]) : @current_user = User.find(:first)		
 	end
 </pre>
 
@@ -65,6 +66,7 @@ Example
 
 <pre>
 	rails rate_test
+	cd rate_test
 	script/generate scaffold User name:string
 	script/generate scaffold Article title:string
 	script/plugin install git://github.com/joebva/rate_fu.git
@@ -72,7 +74,7 @@ Example
 	rake db:migrate
 	-add acts_as_rateable
 	-add acts_as_rater
-	-add render partial
+	-update rateable show views
 	-add partial to view
 	script/generate controller Ratings
 	-add rate method to RatingsController
