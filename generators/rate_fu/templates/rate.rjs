@@ -1,0 +1,3 @@
+page[:star_ratings_block].replace_html(:partial => "ratings/rating", :locals => { :rateable => @rateable })
+page[:your_rate].set_style :color => 'red'
+page[:your_rate].visual_effect :highlight, :duration => 2

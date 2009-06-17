@@ -1,0 +1,37 @@
+<ul class="star-rating">
+  <li><%= link_to_remote( "1", {:url => { :controller => "ratings",
+          :action => "rate", :id => rateable.id, :rating => 1, :type => rateable.class}},
+          :class => 'one-star', :title =>"Poor", :name => 'Poor') %>
+  </li>
+  <li>
+      <%= link_to_remote( "2", {:url => { :controller => "ratings",
+          :action => "rate", :id => rateable.id, :rating => 2, :type => rateable.class}},
+          :class => 'two-stars', :title =>"Nothing special", :name => 'Nothing special') %>
+  </li>
+  <li>
+      <%= link_to_remote( "3", {:url => { :controller => "ratings",
+          :action => "rate", :id => rateable.id, :rating => 3, :type => rateable.class}},
+          :class => 'three-stars', :title =>"Okay", :name => 'Okay') %>
+  </li>
+  <li>
+      <%= link_to_remote( "4", {:url => { :controller => "ratings",
+          :action => "rate", :id => rateable.id, :rating => 4, :type => rateable.class}},
+          :class => 'four-stars', :title =>"Pretty cool", :name => 'Pretty cool') %>
+  </li>
+  <li>
+      <%= link_to_remote( "5", {:url => { :controller => "ratings",
+          :action => "rate", :id => rateable.id, :rating => 5, :type => rateable.class}},
+          :class => 'five-stars', :title =>"Awesome", :name => 'Awesome') %>
+  </li>
+  <li class="current-rating" style="width:<%= rateable.rate_avg * 20.0 %><%= "%" %>;"></li>
+</ul>
+<%= rateable.rate_avg.nan? ? 0 : format("%0.1f", rateable.rate_avg) %> stars after <%= pluralize(rateable.ratings_count, "rating") %>
+
+<div id="your_rate">
+  <% unless @current_user.rater_rated(rateable).blank? %>
+    You rated: <%= @current_user.rater_rated(rateable) %>
+  <% else %>
+    Rate this item now.
+  <% end %>
+</div>
+
