@@ -1,7 +1,7 @@
 RateFu
 ======
 
-Introduction goes here.
+Thanks goes to vote_fu, rails_widgets - spiffy_corners and stars-ratings css.
 
 Install
 ======
@@ -72,18 +72,18 @@ Example
 	script/plugin install git://github.com/joebva/rate_fu.git
 	script/generate rate_fu RateableModel
 	rake db:migrate
-	-add acts_as_rateable
-	-add acts_as_rater
-	-update rateable show views
-	-add partial to view
+	-add acts_as_rateable (app/models/article.rb)
+	-add acts_as_rater (app/models/user.rb)
+	-update rateable show views in controller (app/controllers/articles_controller.rb)
+	-add partial to view (app/views/articles/show.html.erb)
 	script/generate controller Ratings
-	-add rate method to RatingsController
-	-add javascript_include_tag :defaults to layout
+	-add rate method to RatingsController (app/controllers/ratings_controller.rb)
+	-add 'javascript_include_tag :defaults' to layout (app/views/layouts/articles.html.erb)
 	script/server
-	-add user
-	-add article
-	-show article
+	-add user (localhost:3000/users)
+	-add article (localhost:3000/articles)
 	-rate article
+	Done!
 </pre>
 
 	
