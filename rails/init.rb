@@ -1,0 +1,1 @@
+require 'rate_fu'

@@ -5,7 +5,7 @@ class Rating < ActiveRecord::Base
   named_scope :recent,       lambda { |*args| {:conditions => ["created_at > ?", (args.first || 2.weeks.ago).to_s(:db)]} }
   named_scope :descending, :order => "created_at DESC"
 
-  # NOTE: Votes belong to the "voteable" interface, and also to voters
+  # NOTE: Ratings belong to the "rateable" interface, and also to raters
   belongs_to :rateable, :polymorphic => true
   belongs_to :rater,    :polymorphic => true
   

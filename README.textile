@@ -10,20 +10,28 @@ Run the following command:
 <pre>
 	./script/plugin install git://github.com/joebva/rate_fu.git
 </pre>
+
+
 Create a new rails migration using the generator:
 <pre>
 	./script/generate rate_fu RateableModel
 </pre>
+
 This will create a migration file ('ratings' table) and a directory /app/views/ratings with a partial and a .rjs file. It will also move stars.gif to public/images.
+
 
 Add this to all the models you want to be rate: (articles, photos, images)
 <pre>
 	acts_as_rateable
 </pre>
+
+
 Add this to all the models you want to rate things: (users, accounts, employees)
 <pre>
 	acts_as_rater
 </pre>
+
+
 Add this to the show view of each model you set as 'acts_as_rateable'
 <pre>
 	<% rating_stars :generate_css => true %>
@@ -31,7 +39,9 @@ Add this to the show view of each model you set as 'acts_as_rateable'
 	  <%= render :partial => "ratings/rating", :locals => { :rateable => @rateable } %>
 	</div>
 </pre>
+
 The rating_stars method inserts inline css. This can be omitted if you move the styles into your css file.
+
 
 Add this to your controller show action for each rateable model:
 <pre>
@@ -43,49 +53,44 @@ Add this to your controller show action for each rateable model:
 	end
 </pre>
 
+
 Make sure you include javascript in the head:
 <pre>
 	<%= javascript_include_tag :defaults %>
 </pre>
 
-Create a 'Ratings' controller and paste this code inside of it:
+
+Add this to your routes file (config/routes.rb)
 <pre>
-  # rate the image by rateable type
-  def rate
-    rateable_class = params[:type]
-    @rateable = rateable_class.constantize.find(params[:id])
-    # TODO for testing find the first user
-    @current_user ? @current_user = User.find(params[:user_id]) : @current_user = User.find(:first)
-    @current_user.rate(@rateable, params[:rating])
-  end
+	map.connect 'ratings/rate/:id', :controller => 'ratings', :action => 'rate', :method => 'post'
 </pre>
-You must set @current_user equal to whatever 'rater' will be rating this object. if it is a student doing the rating, then set "@current_user = Student.find(params[:student_id])". Remove the line below testing.  This will grab the first User if no user_id param is passed in.
+
+
+!!!Make sure you update ratings_controller.rb to reflect the current user. (vendor/plugins/rate_fu/lib/app/controllers/ratings_controller.rb)
+
 
 Example
 =======
 
-<pre>
-	rails rate_test
-	cd rate_test
-	script/generate scaffold User name:string
-	script/generate scaffold Article title:string
-	script/plugin install git://github.com/joebva/rate_fu.git
-	script/generate rate_fu RateableModel
-	rake db:migrate
-	-add acts_as_rateable (app/models/article.rb)
-	-add acts_as_rater (app/models/user.rb)
-	-update rateable show views in controller (app/controllers/articles_controller.rb)
-	-add partial to view (app/views/articles/show.html.erb)
-	script/generate controller Ratings
-	-add rate method to RatingsController (app/controllers/ratings_controller.rb)
-	-add 'javascript_include_tag :defaults' to layout (app/views/layouts/articles.html.erb)
-	script/server
-	-add user (localhost:3000/users)
-	-add article (localhost:3000/articles)
-	-rate article
-	Done!
-</pre>
+	#rails rate_test
+	#cd rate_test
+	#script/generate scaffold User name:string
+	#script/generate scaffold Article title:string
+	#script/plugin install git://github.com/joebva/rate_fu.git
+	#script/generate rate_fu RateableModel
+	#rake db:migrate
+	##add acts_as_rateable (app/models/article.rb)
+	##add acts_as_rater (app/models/user.rb)
+	##update rateable show views in controller (app/controllers/articles_controller.rb)
+	##add partial to view (app/views/articles/show.html.erb)
+	#script/generate controller Ratings
+	##add rate method to RatingsController (app/controllers/ratings_controller.rb)
+	##add 'javascript_include_tag :defaults' to layout (app/views/layouts/articles.html.erb)
+	#script/server
+	##add user (localhost:3000/users)
+	##add article (localhost:3000/articles)
+	##rate article
+	#Done!
 
-	
+
 Copyright (c) 2009 [Joseph Belcher], released under the MIT license
-
