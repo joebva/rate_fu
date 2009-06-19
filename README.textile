@@ -66,31 +66,31 @@ Add this to your routes file (config/routes.rb)
 </pre>
 
 
-!!!Make sure you update ratings_controller.rb to reflect the current user. (vendor/plugins/rate_fu/lib/app/controllers/ratings_controller.rb)
+Make sure you update ratings_controller.rb to reflect the current user. (vendor/plugins/rate_fu/lib/app/controllers/ratings_controller.rb)
 
 
 Example
 =======
 
-	#rails rate_test
-	#cd rate_test
-	#script/generate scaffold User name:string
-	#script/generate scaffold Article title:string
-	#script/plugin install git://github.com/joebva/rate_fu.git
-	#script/generate rate_fu RateableModel
-	#rake db:migrate
-	##add acts_as_rateable (app/models/article.rb)
-	##add acts_as_rater (app/models/user.rb)
-	##update rateable show views in controller (app/controllers/articles_controller.rb)
-	##add partial to view (app/views/articles/show.html.erb)
-	#script/generate controller Ratings
-	##add rate method to RatingsController (app/controllers/ratings_controller.rb)
-	##add 'javascript_include_tag :defaults' to layout (app/views/layouts/articles.html.erb)
-	#script/server
-	##add user (localhost:3000/users)
-	##add article (localhost:3000/articles)
-	##rate article
-	#Done!
+	rails rate_test
+	cd rate_test
+	script/generate scaffold User name:string
+	script/generate scaffold Article title:string
+	script/plugin install git://github.com/joebva/rate_fu.git
+	script/generate rate_fu RateableModel
+	rake db:migrate
+	-add acts_as_rateable (app/models/article.rb)
+	-add acts_as_rater (app/models/user.rb)
+	-update rateable show views in controller (app/controllers/articles_controller.rb)
+	-add partial to view (app/views/articles/show.html.erb)
+	script/generate controller Ratings
+	-add rate method to RatingsController (app/controllers/ratings_controller.rb)
+	-add 'javascript_include_tag :defaults' to layout (app/views/layouts/articles.html.erb)
+	script/server
+	-add user (localhost:3000/users)
+	-add article (localhost:3000/articles)
+	-rate article
+	Done!
 
 
 Copyright (c) 2009 [Joseph Belcher], released under the MIT license
