@@ -77,7 +77,9 @@ module Rateable #:nodoc:
     end
     
     # Returns the average rating as a float
-    def rate_avg
+    # Pass in the percentage width of your rating system
+    # 5 stars, 20% per star or 10 stars, 10% per star
+    def rate_avg(percent_float)
       all_ratings = Rating.find(:all, :conditions => [
         "rateable_id = ? AND rateable_type = ?",
         id, self.class.name])
@@ -86,7 +88,8 @@ module Rateable #:nodoc:
         total += rating.rating
       end
       ratings = all_ratings.size.to_f
-      total/ratings
+      # return a string like float: 3.3, 4.5, 1.2
+      format("%0.1f", (total/ratings) * percent_float)
     end   
 
     # Returns the number of ratings submitted
@@ -104,6 +107,7 @@ module Rateable #:nodoc:
       raters
     end
     
+    # Returns whether rater rated this object
     def rated_by?(rater)
       rtn = false
       if rater
@@ -113,7 +117,6 @@ module Rateable #:nodoc:
       end
       rtn
     end
-    
     
   end
 end
