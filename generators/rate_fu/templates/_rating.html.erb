@@ -23,9 +23,9 @@
           :action => "rate", :id => rateable.id, :rating => 5, :type => rateable.class}},
           :class => 'five-stars', :title =>"Awesome", :name => 'Awesome') %>
   </li>
-  <li class="current-rating" style="width:<%= rateable.rate_avg * 20.0 %><%= "%" %>;"></li>
+  <li class="current-rating" style="width:<%= rateable.rate_avg(20) %>%;"></li>
 </ul>
-<%= rateable.rate_avg.nan? ? 0 : format("%0.1f", rateable.rate_avg) %> stars after <%= pluralize(rateable.ratings_count, "rating") %>
+<%= rateable.rate_avg(1) %> stars after <%= pluralize(rateable.ratings_count, "rating") %>
 
 <div id="your_rate">
   <% unless @current_user.rater_rated(rateable).blank? %>
