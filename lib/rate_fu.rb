@@ -20,4 +20,3 @@ RAILS_DEFAULT_LOGGER.info "** rate_fu: initialized properly."
   ActiveSupport::Dependencies.load_paths << path
   ActiveSupport::Dependencies.load_once_paths.delete(path)
 end
-
