@@ -7,7 +7,6 @@ ActionController::Base.helper RatingStars::RatingStarsHelper
 require 'acts_as_rateable'
 require 'acts_as_rater'
 require 'has_karma'
-#require 'models/rating.rb'
 
 ActiveRecord::Base.send(:include, Rateable)
 ActiveRecord::Base.send(:include, Rater)

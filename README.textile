@@ -69,7 +69,7 @@ Add this to your routes file (config/routes.rb)
 Make sure you update ratings_controller.rb to reflect the current user. (vendor/plugins/rate_fu/lib/app/controllers/ratings_controller.rb)
 
 
-Example
+Example Application
 =======
 
 	rails rate_test
